@@ -91,7 +91,7 @@ let currentPlayer;
         let sv = snapshot.val();
        $("#messages-box").append(`<p>${sv.msg}</p>`)
 
-
+            
        //script to automatically scroll the chat div http://jsfiddle.net/jPVAf/50/
             var height = 0;
             $('div p').each(function(i, value){
