@@ -13,7 +13,8 @@
   let database = firebase.database();
 
 //Varibales
-    gameover = false;
+let gameover = false;
+let currentPlayer;
 
   let player1 = {
     name: "Player 1",
@@ -49,6 +50,10 @@
   $(document).ready(function(){   
     $('#player1-controls').hide()
     $('#player2-controls').hide()
+    $('#messages-controls').hide()
+
+
+   
     //Updates the local changes to FB
     function UpdatePlayers(){
         database.ref().set({
@@ -58,6 +63,68 @@
                 gameover}
           });
     }
+
+
+   
+
+    function getPlayerName(){
+        let name;
+        if(currentPlayer == "Player1"){
+            name = player1.name;
+        }else{
+            name = player2.name;
+        }
+        return name;
+    }
+
+    function UpdateMessages(){
+            let name =  getPlayerName();
+            let msg = `[${new moment().format("HH:mm A")}] ${name}: ${$("#message").val()}`
+            database.ref("messages").push({
+                msg
+            });
+            $("#message").val("");
+       
+    }
+
+    database.ref("messages").on("child_added", function (snapshot) {
+        let sv = snapshot.val();
+       $("#messages-box").append(`<p>${sv.msg}</p>`)
+
+
+       //script to automatically scroll the chat div http://jsfiddle.net/jPVAf/50/
+            var height = 0;
+            $('div p').each(function(i, value){
+                height += parseInt($(this).height());
+            });
+            height += '';
+            $('div').animate({scrollTop: height});
+    })
+
+
+    // function checkReconnect(){
+    //     let currentPlayer = localStorage.getItem("player");
+    //     if(hasExistingUserCookie() == true && player1.connected == false && player2.connected == false){
+    //         localStorage.clear("player")
+    //     }else if(hasExistingUserCookie() == true && player1.connected == true && player2.connected == false || hasExistingUserCookie() == true && player1.connected == false && player2.connected == true){
+    //         $("#player_name").val(currentPlayer);
+    //         $("#submit").text("Continue");
+    //     }
+    //     console.log("here we check for reconnect")
+    // }
+
+    // function hasExistingUserCookie() {
+    //     let currentPlayer = localStorage.getItem("player")
+
+    //     if(currentPlayer == null){
+    //         localStorage.clear("player");
+    //     return false;
+    //     }
+    //     else
+    //     {
+    //         return true;
+    //     }
+    // }
     //set the name of players
     database.ref().on("value", function (snapshot) {
         let sv = snapshot.val();
@@ -69,8 +136,10 @@
             player1 = sv.players.player1;
             player2 = sv.players.player2;
             gameover = sv.players.gameover;
+
             console.log(player1);
             console.log(player2);
+           
             gameLogic();
             readData();
             if(gameover == false){
@@ -92,26 +161,66 @@
         $("#player2Wins").text(`Wins: ${player2.wins}`);
         $("#player2Losses").text(`Losses: ${player2.losses}`);
         $("#player2Ties").text(`Ties: ${player2.ties}`);
+
+        //get messages
+      
     }
 
 $(document).on("click", ".set-name", function(e) {
     e.preventDefault();
     if(player1.connected == false && player2.connected == false){
         //save Player1 to FireBase
+        currentPlayer = "Player1"
+        player1.connected = true;
+        player1.name = $("#player_name").val().trim();
+        console.log("we're starting a fresh new game")
+        UpdatePlayers()
+        readData();
+
+        $("#name-modal").hide()
+        $("#player1-controls").show();
+        $('#messages-controls').show();
+
+        //send status msg
+        let msg = `<p class="status-msg">[${new moment().format("HH:mm A")}] ${player1.name} connected.</p>`
+        database.ref("messages").push({
+            msg
+        });
+    }else if(player1.connected == false && player2.connected == true){
+        //save Player1 to FireBase
+        currentPlayer = "Player1"
         player1.connected = true;
         player1.name = $("#player_name").val().trim();
         UpdatePlayers()
         readData();
+
+        $("#name-modal").hide()
         $("#player1-controls").show();
-        
-        
+        $('#messages-controls').show();
+
+        //send status msg
+        let msg = `<p class="status-msg">[${new moment().format("HH:mm A")}] ${player1.name} connected.</p>`
+        database.ref("messages").push({
+            msg
+        });
     }else if(player1.connected == true && player2.connected == false){
         //save Player2 to FireBase
+        currentPlayer = "Player2";
         player2.connected = true;
         player2.name = $("#player_name").val().trim();
         UpdatePlayers();
         readData();
+
+
+        $("#name-modal").hide()
         $("#player2-controls").show();
+        $('#messages-controls').show();
+
+        //send status msg
+        let msg = `<p class="status-msg">[${new moment().format("HH:mm A")}] ${player2.name} connected.</p>`
+        database.ref("messages").push({
+            msg
+        });
     }
     
 });
@@ -128,6 +237,7 @@ $(document).on("click", ".player1-choice", function (){
             UpdatePlayers()
         }else{
             console.log("user one already picked")
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
         }
             break;
         case 'paper':
@@ -136,7 +246,7 @@ $(document).on("click", ".player1-choice", function (){
             player1.choice.hasPicked = true;
             UpdatePlayers()
         }else{
-            console.log("user one already picked")
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
         }
             break;
         case 'scissors':
@@ -145,7 +255,7 @@ $(document).on("click", ".player1-choice", function (){
             player1.choice.hasPicked = true;
             UpdatePlayers()
         }else{
-            console.log("user one already picked")
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
         }
             break;
     }
@@ -167,7 +277,7 @@ if(gameover == false){
             player2.choice.hasPicked = true;
             UpdatePlayers()
         }else{
-            console.log("user two already picked")
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
         }
             break;
         case 'paper':
@@ -176,7 +286,7 @@ if(gameover == false){
             player2.choice.hasPicked = true;
             UpdatePlayers()
         }else{
-            console.log("user two already picked")
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
         }
             break;
         case 'scissors':
@@ -185,7 +295,7 @@ if(gameover == false){
             player2.choice.hasPicked = true;
             UpdatePlayers()
         }else{
-            console.log("user two already picked")
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
         }
             break;
     }
@@ -194,9 +304,23 @@ if(gameover == false){
 
 
 function gameLogic(){
-    if(gameover){
+    console.log("running game logic");
+    if(gameover && player1.connected == true && player2.connected == true & currentPlayer !== undefined ){
+
+        //hides player controls
+        $("#player1-controls").hide();
+        $("#player2-controls").hide();
+
+        //shows start new game button
         $("#newgame").empty();
         $("#newgame").append(`<button class="btn btn-danger new-game">New Game</button>`)
+    }else if(gameover == false && player1.connected == true && currentPlayer !== undefined || gameover == false && player2.connected == true && currentPlayer !== undefined ){
+        //show player control again
+        if(currentPlayer == "Player1"){
+            $("#player1-controls").show();
+        }else if(currentPlayer == "Player2"){
+            $("#player2-controls").show();
+        }
     }  
     if(player1.choice.hasPicked && player2.choice.hasPicked && gameover == false){
         let player1_rock = player1.choice.rock;
@@ -206,50 +330,58 @@ function gameLogic(){
         let player2_rock = player2.choice.rock;
         let player2_paper = player2.choice.paper;
         let player2_scissors = player2.choice.scissors;
+        gameover = true;
         
         if((player1_rock && player2_rock) || (player1_paper && player2_paper) || (player1_rock && player2_rock) || (player1_scissors && player2_scissors)){
         player1.ties++;
         player2.ties++;
-        console.log("its a tie");
+        console.log("It's a tie!")
+        $("#messages-box").append(`<p class="font-weight-bold">[${new moment().format("HH:mm A")}] Oh dear! It's a tie!</p>`)
         gameover = true;
-
+    
         }else if(player1_rock && player2_paper) {
           player1.losses++;
           player2.wins++;
           console.log("Player 2 wins!");
+          $("#messages-box").append(`<p class="font-weight-bold">[${new moment().format("HH:mm A")}] ${player1.name} picked rock, and ${player2.name} picked paper. ${player2.name} wins!</span>`)
           gameover = true;
         }else if(player1_rock && player2_scissors) {
           player1.wins++;
           player2.losses++;
           console.log("Player 1 wins!");
+          $("#messages-box").append(`<p class="font-weight-bold">[${new moment().format("HH:mm A")}] ${player1.name} picked rock, and ${player2.name} picked scissors. ${player1.name} wins!</span>`)
           gameover = true;
         }else if(player1_paper && player2_rock) {
           player1.wins++;
           player2.losses++;
           console.log("Player 1 wins!");
+          $("#messages-box").append(`<p class="font-weight-bold">[${new moment().format("HH:mm A")}] ${player1.name} picked paper, and ${player2.name} picked rock. ${player1.name} wins!</span>`)
           gameover = true;
         }else if(player1_scissors && player2_rock) {
           player1.losses++;
           player2.wins++;
           console.log("Player 2 wins!");
           gameover = true;
+          $("#messages-box").append(`<p class="font-weight-bold">[${new moment().format("HH:mm A")}] ${player1.name} picked scissors, and ${player2.name} picked rock. ${player2.name} wins!</span>`)
         }else if(player1_scissors && player2_paper) {
           player1.wins++;
           player2.losses++;
           console.log("Player 1 wins!");
+          $("#messages-box").append(`<p class="font-weight-bold">[${new moment().format("HH:mm A")}] ${player1.name} picked scissors, and ${player2.name} picked paper. ${player1.name} wins!</span>`)
           gameover = true;
         }else if(player1_paper && player2_scissors) {
           player1.losses++;
           player2.wins++;
           console.log("Player 2 wins!");
+          $("#messages-box").append(`<p class="font-weight-bold">[${new moment().format("HH:mm A")}] ${player1.name} picked paper, and ${player2.name} picked scissors. ${player2.name} wins!</span>`)
           gameover = true;
         }
-        
         UpdatePlayers();
         } 
     }
 
     $(document).on("click", ".new-game", function (){
+        let PlayerName = getPlayerName();
         player1.choice.rock = false;
         player1.choice.paper = false;
         player1.choice.scissors = false;
@@ -261,10 +393,82 @@ function gameLogic(){
         player2.choice.hasPicked = false;
         gameover=false;
         UpdatePlayers();
+
+      
+        //send status msg
+        let msg = `<p class="status-msg">[${new moment().format("HH:mm A")}] ${PlayerName} has started a new match.</p>`
+        database.ref("messages").push({
+            msg
+        });
     });
 
+    $(document).on("click", ".send-message", function (e){
+        e.preventDefault();
+        UpdateMessages();
+     });
+
+    // //detecs window close
+    $(window).on("unload", function(e) {
+
+        //Check to see if the other player is still connected, if so it'll send the new status. If not then end the game. I
+        if(currentPlayer == "Player1" && player2.connected == true){
+            player1.connected = false;
+
+            UpdatePlayers();
+
+             //send status msg
+            let msg = `<p class="status-msg">[${new moment().format("HH:mm A")}] ${player1.name} dissconnected.</p>`
+            database.ref("messages").push({
+                msg
+            });
+        }else if(currentPlayer == "Player2" && player1.connected == true){
+            player2.connected = false;
+            UpdatePlayers();
+
+            //send status msg
+            let msg = `<p class="status-msg">[${new moment().format("HH:mm A")}] ${player2.name} dissconnected.</p>`
+            database.ref("messages").push({
+                msg
+            });
+        }else{
+            shutItDown();
+        }      
+    });
+
+    // function startNewGameSession(){
+    //     console.log("doing it")
+    //     database.ref().set({
+    //       clearObj
+    //     });
+    //     console.log('clear fb')
+    // }
+
+    function shutItDown(){
+        gameover = false;
+         player1 = {
+            name: "Player 1",
+            choice: {rock: false, paper: false, scissors: false, hasPicked: false},
+            wins: 0,
+            ties: 0,
+            losses: 0,
+            connected: false,
+          }
+        
+           player2 = {
+            name: "Player 2",
+            choice: {rock: false, paper: false, scissors: false, hasPicked: false},
+            wins: 0,
+            ties: 0,
+            losses: 0,
+            connected: false,
+          }
+          UpdatePlayers()
+    }
 
 
-
+ 
 
 });
+
+
+
