@@ -37,31 +37,38 @@
              
             </div>
             <div id="all-controls">
-                <div id="newgame"></div>
+               
             <div class="row">
                 <div id="player1-controls" class="col-md-6">
-                        <h2 id="player1-h2">Player 1 Controls</h2>
-                        <button class="btn btn-primary player1-choice" data-value="rock">Rock</button>
-                        <button class="btn btn-primary player1-choice" data-value="paper">Paper</button>
-                        <button class="btn btn-primary player1-choice"  data-value="scissors">Scissors</button>
-                        <h4 id="player1Wins">Wins: 0</h4>
-                        <h4 id="player1Losses">Losses: 0</h4>
-                        <h4 id="player1Ties">Ties: 0</h4>
+                        <div class="stats">
+                            <h3 id="player1-h2">Player 1 Controls</h3>
+                            <button class="btn btn-primary player1-choice" data-value="rock"><img src="assets/img/rock.svg" height="50px"></button>
+                            <button class="btn btn-primary player1-choice" data-value="paper"><img src="assets/img/paper.png" height="50px"></button>
+                            <button class="btn btn-primary player1-choice"  data-value="scissors"><img src="assets/img/scissors.svg" height="50px"></button>
+                            <br>
+                            <small id="player1Wins" class="font-weight-bold">Wins: 0</small><br>
+                            <small id="player1Losses" class="font-weight-bold">Losses: 0</small><br>
+                            <small id="player1Ties" class="font-weight-bold">Ties: 0</small>
+                        </div>
                 </div>
                 <div id="player2-controls" class="col-md-6">
-                      <h2 id="player2-h2">Player 2 Controls</h2>
-                      <button class="btn btn-primary player2-choice" data-value="rock">Rock</button>
-                      <button class="btn btn-primary player2-choice" data-value="paper">Paper</button>
-                      <button class="btn btn-primary player2-choice"  data-value="scissors">Scissors</button>
-                      <h4 id="player2Wins">Wins: 0</h4>
-                      <h4 id="player2Losses">Losses: 0</h4>
-                      <h4 id="player2Ties">Ties: 0</h4>
+                    <div class="stats">
+                        <h3 id="player2-h2">Player 2 Controls</h3>
+                        <button class="btn btn-primary player2-choice" data-value="rock"><img src="assets/img/rock.svg" height="50px"></button>
+                        <button class="btn btn-primary player2-choice" data-value="paper"><img src="assets/img/paper.png" height="50px"></button>
+                        <button class="btn btn-primary player2-choice"  data-value="scissors"><img src="assets/img/scissors.svg" height="50px"></button>
+                        <br>
+                        <small id="player2wins" class="font-weight-bold"><strong>Wins: 0</strong></small><br>
+                        <small id="player2Losses" class="font-weight-bold">Losses: 0</small><br>
+                        <small id="player2Ties" class="font-weight-bold">Ties: 0</small>
+                    </div>
                 </div>
             </div>
             <div id="messages-controls">
+                <div id="newgame" class="col-md-6"></div>
                 <form>
                     <div class="form-group">
-                        <h4>Messages</h4>
+           
                     </div>
                     <div class="form-group">
                         <div class="form-control" id="messages-box">

@@ -151,13 +151,13 @@ let currentPlayer;
     function readData(){
         console.log("reading new data from DB")
         //Player 1
-        $("#player1-h2").html(`<h2>${player1.name} Controls</h2>`)
+        $("#player1-h2").text(`Player 1: ${player1.name}`)
         $("#player1Wins").text(`Wins: ${player1.wins}`);
         $("#player1Losses").text(`Losses: ${player1.losses}`);
         $("#player1Ties").text(`Ties: ${player1.ties}`);
 
         //Player 2
-        $("#player2-h2").html(`<h2>${player2.name} Controls</h2>`)
+        $("#player2-h2").text(`Player 2: ${player2.name}`)
         $("#player2Wins").text(`Wins: ${player2.wins}`);
         $("#player2Losses").text(`Losses: ${player2.losses}`);
         $("#player2Ties").text(`Ties: ${player2.ties}`);
@@ -234,6 +234,7 @@ $(document).on("click", ".player1-choice", function (){
         if(player1.choice.hasPicked == false){
             player1.choice.rock = true;
             player1.choice.hasPicked = true;
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've chosen rock.</p>`)
             UpdatePlayers()
         }else{
             console.log("user one already picked")
@@ -244,6 +245,7 @@ $(document).on("click", ".player1-choice", function (){
         if(player1.choice.hasPicked == false){
             player1.choice.paper = true;
             player1.choice.hasPicked = true;
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've chosen paper.</p>`)
             UpdatePlayers()
         }else{
             $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
@@ -253,6 +255,7 @@ $(document).on("click", ".player1-choice", function (){
         if(player1.choice.hasPicked == false){
             player1.choice.scissors = true;
             player1.choice.hasPicked = true;
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've chosen scissors.</p>`)
             UpdatePlayers()
         }else{
             $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
@@ -275,6 +278,7 @@ if(gameover == false){
         if(player2.choice.hasPicked == false){
             player2.choice.rock = true;
             player2.choice.hasPicked = true;
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've chosen rock.</p>`)
             UpdatePlayers()
         }else{
             $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
@@ -284,6 +288,7 @@ if(gameover == false){
         if(player2.choice.hasPicked == false){
             player2.choice.paper = true;
             player2.choice.hasPicked = true;
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've chosen paper.</p>`)
             UpdatePlayers()
         }else{
             $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
@@ -293,6 +298,7 @@ if(gameover == false){
         if(player2.choice.hasPicked == false){
             player2.choice.scissors = true;
             player2.choice.hasPicked = true;
+            $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've chosen scissors.</p>`)
             UpdatePlayers()
         }else{
             $("#messages-box").append(`<p class="status-msg">[${new moment().format("HH:mm A")}] You've already picked. Waiting on the other player.</p>`)
@@ -307,13 +313,13 @@ function gameLogic(){
     console.log("running game logic");
     if(gameover && player1.connected == true && player2.connected == true & currentPlayer !== undefined ){
 
-        //hides player controls
-        $("#player1-controls").hide();
-        $("#player2-controls").hide();
+        // //hides player controls
+        // $("#player1-controls").hide();
+        // $("#player2-controls").hide();
 
         //shows start new game button
         $("#newgame").empty();
-        $("#newgame").append(`<button class="btn btn-danger new-game">New Game</button>`)
+        $("#newgame").append(`<button class="btn btn-danger new-game col-md-12">New Game</button>`)
     }else if(gameover == false && player1.connected == true && currentPlayer !== undefined || gameover == false && player2.connected == true && currentPlayer !== undefined ){
         //show player control again
         if(currentPlayer == "Player1"){
